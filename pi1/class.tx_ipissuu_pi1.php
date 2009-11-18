@@ -1,26 +1,26 @@
 <?php
 /***************************************************************
-*  Copyright notice
-*
-*  (c) 2009 Ingo Pfennigstorf <i.pfennigstorf@gmail.com>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+ *  Copyright notice
+ *
+ *  (c) 2009 Ingo Pfennigstorf <i.pfennigstorf@gmail.com>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * [CLASS/FUNCTION INDEX of SCRIPT]
  *
@@ -42,111 +42,104 @@ class tx_ipissuu_pi1 extends tslib_pibase {
 	var $scriptRelPath = 'pi1/class.tx_ipissuu_pi1.php';	// Path to this script relative to the extension dir.
 	var $extKey        = 'ip_issuu';	// The extension key.
 	var $pi_checkCHash = true;
-	
-		//SWFObject Version
-		var $swfObjectVersion = '2.2';
 
-		//id for the playeer
-		var $contentId = null;
-		var $layout;
-		var $backgroundcolor;
-		var $showflipbtn;
-		var $documentid;
-		var $docname;
-		var $username;
-		var $loadinginfotext;
-		var $width;
-		var $height;
-		var $hostname;
-		//embedding code
-		var $embedCode = null;
+	//SWFObject Version
+	var $swfObjectVersion = '2.2';
 
-		/**
-		 * The main method of the PlugIn
-		 *
-		 * @param	string		$content: The PlugIn content
-		 * @param	array		$conf: The PlugIn configuration
-		 * @return	The content that is displayed on the website
-		 */
-		function main($content, $conf) {
-			$this->conf = $conf;
-			$this->pi_setPiVarDefaults();
-			$this->pi_loadLL();
-			$this->pi_initPIflexForm();
+	//id for the playeer
+	var $contentId = null;
+	var $layout;
+	var $backgroundcolor;
+	var $showflipbtn;
+	var $documentid;
+	var $docname;
+	var $username;
+	var $loadinginfotext;
+	var $width;
+	var $height;
+	var $hostname;
+	//embedding code
+	var $embedCode = null;
 
-			$this->hostname = t3lib_div::getIndpEnv('TYPO3_HOST_ONLY');
+	/**
+	 * The main method of the PlugIn
+	 *
+	 * @param	string		$content: The PlugIn content
+	 * @param	array		$conf: The PlugIn configuration
+	 * @return	The content that is displayed on the website
+	 */
+	function main($content, $conf) {
+		$this->conf = $conf;
+		$this->pi_setPiVarDefaults();
+		$this->pi_loadLL();
+		$this->pi_initPIflexForm();
 
-			//div id of the player
-			$this->contentId = 'issuuViewer-'.$GLOBALS['TSFE']->id;
+		$this->hostname = t3lib_div::getIndpEnv('TYPO3_HOST_ONLY');
 
-			//Code from Flexform
-			$this->embedCode = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'jCode', 'sDEF');
+		//div id of the player
+		$this->contentId = 'issuuViewer-'.$GLOBALS['TSFE']->id;
 
-			//SwfObject into the header
-			$GLOBALS['TSFE']->additionalHeaderData[$this->prefixId] = $this->addSWFObjectToHead();
+		//Code from Flexform
+		$this->embedCode = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'jCode', 'sDEF');
 
-			//einlesen des doks
-			$this->getIssuuJoom();
+		//SwfObject into the header
+		$GLOBALS['TSFE']->additionalHeaderData[$this->prefixId] = $this->addSWFObjectToHead();
 
-			//der rest
-			$GLOBALS['TSFE']->additionalHeaderData[$this->extKey] = $this->getIssuuCode();
+		//Parsing the code
+		$this->getIssuuJoom();
 
-			//nur die simple id in den content
-			$content='<div id="'.$this->contentId.'"></div>';
+		//der rest
+		$GLOBALS['TSFE']->additionalHeaderData[$this->extKey] = $this->getIssuuCode();
 
-			return $this->pi_wrapInBaseClass($content);
-		}
+		//nur die simple id in den content
+		$content='<div id="'.$this->contentId.'"></div>';
 
-		/**
-		*	Function to load SWFObject via Google Ajax Apis
-		*/
-		function addSWFObjectToHead(){
-			$callSWF = '<script type="text/javascript" src="http://www.google.com/jsapi"></script><script type="text/javascript">google.load("swfobject", '.$this->swfObjectVersion.');</script>';
+		return $this->pi_wrapInBaseClass($content);
+	}
 
-			return $callSWF;
-		}
+	/**
+	*	Function to load SWFObject via Google Ajax Apis
+	*/
+	function addSWFObjectToHead(){
+		$callSWF = '<script type="text/javascript" src="http://www.google.com/jsapi"></script><script type="text/javascript">google.load("swfobject", '.$this->swfObjectVersion.');</script>';
 
-		/**
-		*	get Isuu Code and Options From XML
-		*/
-		function getIssuuCode(){
-			$isuuCode = '<script type="text/javascript">  var attributes = { id: \''.$this->contentId.'\' }; var params = { allowfullscreen: \'true\', menu: \'false\' }; var flashvars = { jsAPIClientDomain: \''.$this->hostname.'\', mode: \'embed\', layout: \''.$this->layout.'\',   showFlipBtn: \''.$this->showflipbtn.'\', documentId: \''.$this->documentid.'\', docName: \''.$this->docname.'\', username: \''.$this->username.'\', loadingInfoText: \''.$this->loadinginfotext.'\', et: \'1251461518896\', er: \'26\' }; ';
-			$isuuCode .='swfobject.embedSWF("http://static.issuu.com/webembed/viewers/style1/v1/IssuuViewer.swf", "'.$this->contentId.'", "'.$this->width.'", "'.$this->height.'", "9.0.0","swfobject/expressInstall.swf", flashvars, params, attributes);</script>';
-			return $isuuCode;
-		}
+		return $callSWF;
+	}
 
-		/**
-		*	Read Code and call Formatting Function
-		*/
-		function getIssuuJoom(){
+	/**
+	*	get Issuu Code and Options From XML
+	*/
+	function getIssuuCode(){
+		$isuuCode = '<script type="text/javascript">  var attributes = { id: \''.$this->contentId.'\' }; var params = { allowfullscreen: \'true\', menu: \'false\' }; var flashvars = { jsAPIClientDomain: \''.$this->hostname.'\', mode: \'embed\', layout: \''.$this->layout.'\',   showFlipBtn: \''.$this->showflipbtn.'\', documentId: \''.$this->documentid.'\', docName: \''.$this->docname.'\', username: \''.$this->username.'\', loadingInfoText: \''.$this->loadinginfotext.'\', et: \'1251461518896\', er: \'26\' }; ';
+		$isuuCode .='swfobject.embedSWF("http://static.issuu.com/webembed/viewers/style1/v1/IssuuViewer.swf", "'.$this->contentId.'", "'.$this->width.'", "'.$this->height.'", "9.0.0","swfobject/expressInstall.swf", flashvars, params, attributes);</script>';
+		return $isuuCode;
+	}
 
-			$vars = explode(' ',$this->embedCode);
+	/**
+	*	Read Code and call Formatting Function
+	*/
+	function getIssuuJoom(){
 
-			//layout an erster stelle
-			//$this->layout = $this->getVars($vars[1]);
+		$vars = explode(' ',$this->embedCode);
 
-			for ($i= 1; $i < sizeOf($vars); $i++){
-				$this->getVars($vars[$i]);
-
-			}
-
-		}
-
-		/**
-		*	Get Elements from Code and put them to Variables
-		*/
-		function getVars($variable){
-
-			$kette = explode('=',$variable);
-			$this->$kette[0] = $kette[1];
-
-
+		for ($i= 1; $i < sizeOf($vars); $i++){
+			$this->getVars($vars[$i]);
 		}
 
 	}
 
+	/**
+	*	Get Elements from Code and put them to Variables
+	*/
+	function getVars($variable){
+
+		$kette = explode('=',$variable);
+		$this->$kette[0] = $kette[1];
 
 
+	}
+
+}
 
 
 
