@@ -1,1 +1,1 @@
-This is just a simple Extension that lets you embed isuu-flip pdfs into you TYPO3-Site
+This is just a simple Extension that lets you embed issuu-flip pdfs into you TYPO3-Site
