@@ -2,27 +2,36 @@
 	<meta>
 		<langDisable>1</langDisable>
 	</meta>
-  <sheets>
-    <sDEF>
-      <ROOT>
-        <TCEforms>
-          <sheetTitle>Options</sheetTitle>
-        </TCEforms>
-        <type>array</type>
-        <el>
-          <jCode>
-            <TCEforms>
-              <label>Joomla Code for Issuu</label>  
-              <config>
-                <size>32</size>
-		        <max>1000</max>
-		        <type>input</type>
-		        <eval>required</eval>
-              </config>
-            </TCEforms>
-          </jCode>   
-        </el>
-      </ROOT>
-    </sDEF>
-  </sheets>
+	<sheets>
+		<sDEF>
+			<ROOT>
+				<TCEforms>
+					<sheetTitle>Options</sheetTitle>
+				</TCEforms>
+				<type>array</type>
+				<el>
+					<jCode>
+						<TCEforms>
+							<label>Joomla Code for Issuu</label>
+							<config>
+								<size>32</size>
+								<max>1000</max>
+								<type>input</type>
+								<eval>required</eval>
+							</config>
+						</TCEforms>
+					</jCode>
+					<flashTrans>
+						<TCEforms>
+							<label>Transparent Flash</label>
+							<config>
+								<type>check</type>
+							</config>
+						</TCEforms>
+					</flashTrans>
+				</el>
+
+			</ROOT>
+		</sDEF>
+	</sheets>
 </T3DataStructure>

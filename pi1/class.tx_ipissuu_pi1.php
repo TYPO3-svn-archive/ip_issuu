@@ -48,7 +48,7 @@ class tx_ipissuu_pi1 extends tslib_pibase {
 
 	// divid for the playeer
 	var $contentId = null;
-	
+
 	//flashvars
 	var $layout;
 	var $backgroundcolor ='FFFFFF';
@@ -61,7 +61,10 @@ class tx_ipissuu_pi1 extends tslib_pibase {
 	var $height;
 	var $unit = 'px';
 	var $hostname;
-	
+
+	//@TODO experimental
+	var $flashTransparent;
+
 	//embedding code
 	var $embedCode = null;
 
@@ -86,6 +89,10 @@ class tx_ipissuu_pi1 extends tslib_pibase {
 		//Code from Flexform
 		$this->embedCode = str_replace(']','',$this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'jCode', 'sDEF'));
 
+		//transparentÊ@TODO
+		$this->flashTransparent = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'flashTrans', 'sDEF');
+
+
 		//SwfObject into the header
 		$GLOBALS['TSFE']->additionalHeaderData[$this->prefixId] = $this->addSWFObjectToHead();
 
@@ -102,9 +109,9 @@ class tx_ipissuu_pi1 extends tslib_pibase {
 	}
 
 	/**
-	*	Function to load SWFObject via Google Ajax Apis
-	*	@TODO for those who don't like google or so maybe implement feature to load SWFObject locally (Selection via TS-Constants)
-	*/
+	 *	Function to load SWFObject via Google Ajax Apis
+	 *	@TODO for those who don't like google or so maybe implement feature to load SWFObject locally (Selection via TS-Constants)
+	 */
 	function addSWFObjectToHead(){
 		$callSWF = '<script type="text/javascript" src="http://www.google.com/jsapi"></script><script type="text/javascript">google.load("swfobject", '.$this->swfObjectVersion.');</script>';
 
@@ -112,40 +119,55 @@ class tx_ipissuu_pi1 extends tslib_pibase {
 	}
 
 	/**
-	*	get Issuu Code and Options From XML
-	*	@TODO implement other embeddingoptions
-	*/
+	 *	get Issuu Code and Options From XML
+	 *	@TODO implement other embeddingoptions
+	 */
 	function getIssuuCode(){
-		$isuuCode = '<script type="text/javascript">  var attributes = { id: \''.$this->contentId.'\' }; var params = { allowfullscreen: \'true\', menu: \'false\' }; var flashvars = { jsAPIClientDomain: \''.$this->hostname.'\', mode: \'embed\', backgroundColor:\''.$this->backgroundcolor.'\', layout: \''.$this->layout.'\',   showFlipBtn: \''.$this->showflipbtn.'\', documentId: \''.$this->documentid.'\', docName: \''.$this->docname.'\', username: \''.$this->username.'\', loadingInfoText: \''.$this->loadinginfotext.'\', et: \''.time().'\', er: \'71\' }; ';
+		$isuuCode = '<script type="text/javascript">  var attributes = { id: \''.$this->contentId.'\' }; var params = { '.$this->getTransparentMode().' allowfullscreen: \'true\', menu: \'false\' }; var flashvars = { jsAPIClientDomain: \''.$this->hostname.'\', mode: \'embed\', backgroundColor:\''.$this->backgroundcolor.'\', layout: \''.$this->layout.'\',   showFlipBtn: \''.$this->showflipbtn.'\', documentId: \''.$this->documentid.'\', docName: \''.$this->docname.'\', username: \''.$this->username.'\', loadingInfoText: \''.$this->loadinginfotext.'\', et: \''.time().'\', er: \'71\' }; ';
 		$isuuCode .='swfobject.embedSWF("http://static.issuu.com/webembed/viewers/style1/v1/IssuuViewer.swf", "'.$this->contentId.'", "'.$this->width.'", "'.$this->height.'", "9.0.0","swfobject/expressInstall.swf", flashvars, params, attributes);</script>';
 		return $isuuCode;
 	}
 
 	/**
-	*	Read Code and call Formatting Function
-	*	@TODO check if code is valid (regex)
-	*/
+	 *	Read Code and call Formatting Function
+	 *	@TODO check if code is valid (regex)
+	 */
 	function getIssuuJoom(){
 
 		$vars = explode(' ',$this->embedCode);
 
 		for ($i= 1; $i < sizeOf($vars); $i++){
 			$this->getVars($vars[$i]);
-
 		}
 
 	}
 
 	/**
-	*	Get Elements from Code and put them to Variables
-	*	@TODO maybe check variables
-	*	@TODO maybe an array would be better instead of variables for each parameter
-	*/
+	 *	Get Elements from Code and put them to Variables
+	 *	@TODO maybe check variables
+	 *	@TODO maybe an array would be better instead of variables for each parameter
+	 */
 	function getVars($variable){
 
 		$kette = explode('=',$variable);
 		$this->$kette[0] = $kette[1];
 
+	}
+
+	/**
+	 * Experimental Use of wmode = transparent
+	 * @TODO Testing
+	 * @return unknown_type
+	 */
+	function getTransparentMode(){
+
+		$wmode = '';
+
+		if ($this->flashTransparent == 1){
+			$wmode = 'wmode: \'transparent\',';
+		}
+
+		return $wmode;
 	}
 
 }
