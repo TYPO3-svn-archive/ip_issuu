@@ -21,11 +21,7 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-/**
- * [CLASS/FUNCTION INDEX of SCRIPT]
- *
- * Hint: use extdeveval to insert/update function index above.
- */
+
 
 require_once(PATH_tslib.'class.tslib_pibase.php');
 
@@ -136,7 +132,7 @@ class tx_ipissuu_pi1 extends tslib_pibase {
 
 		$vars = explode(' ',$this->embedCode);
 
-		for ($i= 1; $i < sizeOf($vars); $i++){
+		for ($i= 1; $i < count($vars); $i++){
 			$this->getVars($vars[$i]);
 		}
 
@@ -145,13 +141,10 @@ class tx_ipissuu_pi1 extends tslib_pibase {
 	/**
 	 *	Get Elements from Code and put them to Variables
 	 *	@TODO maybe check variables
-	 *	@TODO maybe an array would be better instead of variables for each parameter
 	 */
 	function getVars($variable){
-
 		$kette = explode('=',$variable);
 		$this->$kette[0] = $kette[1];
-
 	}
 
 	/**
@@ -160,12 +153,8 @@ class tx_ipissuu_pi1 extends tslib_pibase {
 	 * @return unknown_type
 	 */
 	function getTransparentMode(){
-
-		$wmode = '';
-
-		if ($this->flashTransparent == 1){
-			$wmode = 'wmode: \'transparent\',';
-		}
+		
+		$this->flashTransparent == 1 ? $wmode = 'wmode: \'transparent\',' : $wmode = '';
 
 		return $wmode;
 	}
